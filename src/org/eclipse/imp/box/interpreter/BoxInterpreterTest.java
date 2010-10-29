@@ -11,6 +11,12 @@
 package org.eclipse.imp.box.interpreter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 import org.eclipse.imp.box.parser.BoxParseController;
 import org.eclipse.imp.box.parser.Ast.IBox;
@@ -878,12 +884,47 @@ public class BoxInterpreterTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void bigTest() {
+        runFileTest("data/KMeans-x10.box", "data/KMeans.x10");
+    }
+
+    private static void runFileTest(String inputFilePath, String expectedFilePath) {
+        File inputFile= new File(inputFilePath);
+        File expectedFile= new File(expectedFilePath);
+
+        String input= readFile(inputFile);
+        String expected= readFile(expectedFile);
+
+        BoxInterpreter bi= new BoxInterpreter(80, true, 4);
+        IBox boxPrg= parseBox(input);
+        String actual= bi.interpret(boxPrg);
+
+        assertEquals(expected, actual);
+    }
+
+    private static String readFile(File file) {
+        try {
+            FileReader fileReader= new FileReader(file);
+            char[] buf= new char[(int) file.length()];
+            int len= fileReader.read(buf);
+
+            assertTrue(len > 0);
+            return new String(buf);
+        } catch (IOException e) {
+            assertTrue(e.getMessage(), false);
+            return "";
+        }
+    }
+
     private static IBox parseBox(String boxString) {
         BoxParseController bpc= new BoxParseController(true);
         bpc.initialize(null, null, new SystemOutErrMessageHandler());
         IBox box= (IBox) bpc.parse(boxString, null);
         return box;
     }
+
+    // ============================================================================
 
     public static String H(String... args) {
         return emitOp("H", null, args);

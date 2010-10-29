@@ -1,0 +1,156 @@
+V[ "/*
+ *  This file is part of the X10 project (http://x10-lang.org).
+ *
+ *  This file is licensed to You under the Eclipse Public License (EPL);
+ *  You may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *      http://www.opensource.org/licenses/eclipse-1.0.php
+ *
+ *  (C) Copyright IBM Corporation 2006-2010.
+ */"
+
+V vs=0 [
+  H hs=0 [ H[ "import" "x10.io.Console" ] ";" ]
+  H hs=0 [ H[ "import" "x10.util.Random" ] ";" ]
+]
+
+V vs=0 [
+"/**
+ * A KMeans object o can compute K means of a given set of 
+ * points of dimension o.myDim.
+ * <p> 
+ * This class implements a sequential program, that is readily parallelizable.
+ *  Converted to 2.1 on 9/1/2010
+ */"
+V vs=0 [
+HV[ H["public" "class"] H hs=0 ["KMeans" "(" HV[ H["myDim" ":" "Int"] ] ")"] "{" ]
+
+    H[ "static" HV[ H["DIM" "=" "2" "," ] H[ "K" "=" "4" "," ] H[ "POINTS" "=" "2000" "," ] H[ "ITERATIONS" "=" "50" ] ] ";" ]
+    H[ "static" HV[ H["EPS" "=" "0.01F" ] ";" ] ]
+    
+    H[ "static" "type" HV[ H[ H hs=0 [ "ValVector" "(" H ["k" ":" "Int"] ")" ] "=" H hs = 0 [ "Array" "[" "Float" "]" H[ "{" H[ "self.rank" "==" "1" ] "," H[ "self.size" "==" "k" ] "," "self.rect" "," "self.zeroBased" "}" ] ] ] ] ";" ]
+    H[ "static"" type" HV[ H[ "ValVector" "=" H hs=0 ["ValVector" "(" "DIM" ")"] ] ] ";" ]
+    
+    H[ "static" "type" HV[ H[ H hs=0 [ "Vector" "(" "k" ":" "Int" ")" ] "=" H[ H hs=0 [ "Array" "[" "Float" "]" ] H[ "{" H[ "self.rank" "==" "1" ","] H[ "self.size" "==" "k" "," ] H[ "self.rect" ","] H[ "self.zeroBased" ] "}" ] ] ] ] ";" ]
+    H[ "static" "type" H hs=1 [ "Vector" "=" H hs=0 [ "Vector" "(" "DIM" ")" ] ] ";" ]
+    
+    H[ "static" "type" H[ H hs=0 [ "SumVector" "(" "d" ":" "Int" ")" ] "=" H hs=0 [ "V" H[ "{" "self.dim" "==" "d" "}" ] ] ] ";" ]
+    H[ "static" "type" H[ "SumVector" "=" H hs=0 [ "SumVector" "(" "DIM" ")" ] ] ";" ]
+
+    V vs=0 [
+   "/**
+     * V represents the sum of 'count' number of vectors of dimension 'dim'.
+     */"
+    V[ H[ H[ "static" "class" H hs=0 [ "V" "(" "dim" ":" "Int" ")" ] "implements" H[ H hs=0 [ "(" "Int" ")" ] "=>" "Float" ] ] "{" ]
+        I is=4 [ V[
+        H[ "var" H[ "vec" ":" H hs=0 [ "Vector" "(" "dim" ")" ] ] ";" ]
+        H[ "var" H[ "count" ":" "Int" ] ";" ]
+        V[ H[ "def" H hs=0 [ "this" "(" "dim" ":" "Int" "," "init" ":" "(" "int" ")" "=>" "Float" ")" ] ":" H hs=0 [ "SumVector" "(" "dim" ")" ] "{" ]
+           I is=4 [ V[
+               H[ H hs=0 [ "property" "(" "dim" ")" ] ";" ]
+               H[ H hs = 0 [ "vec" "=" "new" "Array" "[" "Float" "]" "(" "this.dim" "," "init" ")" ] ";" ]
+               H[ H hs = 0 [ "count" "=" "0" ] ";" ]
+           ] ]
+        "}" ]
+        H[ "public" "def" H hs=0 [ "apply" "(" "i" ":" "Int" ")" ] "=" H hs=0 [ "vec" "(" "i" ")" ] ";" ]
+        V[ H[ "def" H hs=0 [ "makeZero" "(" ")" ] "{" ]
+            I is=4 [ V[
+            H hs=0 [ "for" "(" H[ H hs=0 [ "[" "i" "]" ] "in" H hs=0 [ "0" ".." "dim" "-" "1" ] ] ")" ]
+                I is=2 [
+                H[ H hs=0 [ "vec" "(" "i" ")" ] "=" "0.0F" ";" ]
+                ]
+            H hs=0 [ "count" "=" "0"] ";"
+            ] ]
+        "}" ]
+        V[ H[ "def" H hs=0 [ "dist" "(" "a" ":" "ValVector" "(" "dim" ")" ")" ] ":" "Float" "{" ]
+            I is=4 [ V[
+                H[ "var" "dist" ":" "Float" "=" "0.0F" ";" ]
+                H[ H hs=0 [ "for" "(" H[ H hs=0 [ "[" "i" "]" ] "in" H hs=0 [ "0" ".." "dim" "-" "1" ] ] ")" ] "{" ]
+                I is=4 [ V[
+                    H[ "val" "tmp" "=" H hs=0 [ "vec" "(" "i" ")" ] "-" H hs=0 [ "a" "(" "i" ")" ] ";" ]
+                    H[ "dist" "+=" H hs=0 [ "tmp" "*" "tmp" ] ";" ]
+                ] ]
+                "}"
+                "return" "dist" ";"
+            ] ]
+        "}" ]
+        V[ H[ "def" H hs=0 [ "print" "(" ")" ] "{" ]
+            I is=4 [ V[
+                H hs=0 [ H hs=0 [ "Console.OUT.println" "(" ")" ] ";" ]
+                H[ H hs=0 [ "for" "(" H[ H hs=0 [ "[" "i" "]" ] "in" H hs=0 [ "0" ".." "dim" "-" "1" ] ] ")" ] "{" ]
+                    I is=4 [ V[
+                        H hs=0 [ "Console.OUT.print" "(" "(" "i" ">" "0" "?" ":" ")" "+" "vec" "(" "i" ")" ")" ";" ]
+                    ] ]
+                "}" ] ]
+        "}" ]
+        H[ "def" H[ H hs=0 [ "normalize" H hs=0 [ "(" ")" ] ] "{" H hs=0 [ "div" "(" "count" ")" ";" ] "}" ] ]
+        H[ "def" H[ H hs=0 [ "count" "(" ")" ] "=" "count" ] ";" ]
+        ] ]
+    "}" ] ]
+
+    V[ H[ "def" H hs=0 [ "this" "(" "myDim" ":" "Int" ")" ] ":" H hs=0 [ "KMeans" "{" H[ "self.myDim" "==" "myDim" ] "}" ] "{" ]
+        I is=4 [ V[
+            H hs=0 [ "property" "(" "myDim" ")" ";" ]
+        ] ]
+    "}" ]
+
+    V vs=0 [
+    "/**
+     * Compute myK means for the given set of points of dimension myDim.
+     */"
+    V[ H[ "def" H hs=0 [ "computeMeans" "(" H[ H hs=0 [ H[ H hs=0 [ "myK" ":" ] "Int" ] "," ] H[ H hs=0 [ "points" ":" ] H hs=0 [ H hs=0 [ "Array" "[" "ValVector" "(" "myDim" ")" "]" ] "(" "1" ")" ] ] ")" ] ] ":" H hs=0 [ "KMeansData" "(" "myK" "," "myDim" ")" ] "{" ]
+        I is=4 [ V[
+            H[ "var" V[ HV[ H[ "redCluster" ":" "KMeansData" "(" "myK" "," "myDim" ")" "=" ]
+                H[ "new" H hs=0 [ "Array" "[" "SumVector" "(" "myDim" ")" "]" "(" "myK" "," H[ "(" "i" ":" "int" ")" "=>" "new" "V" "(" "myDim" "," H[ "(" "j" ":" "int" ")" "=>" "points" "(" "i" ")" "(" "j" ")" ] ")" ] ")" ] ";" ] ] ] ]
+            H[ "var" V[ HV[ H[ "blackCluster" ":" H hs=0 [ "KMeansData" "(" "myK" "," "myDim" ")" ] "=" ]
+                H[ "new" H hs=0 [ "Array" "[" "SumVector" "(" "myDim" ")" "]" "(" "myK" "," H[ H hs=0 [ "(" "i" ":" "int" ")" ] "=>" "new" H hs=0 [ "V" "(" H[ "myDim" "," H[ H hs=0 [ "(" "j" ":" "int" ")" ] "=>" "0.0F" ] ] ")" ")" ] ] ] ] ] ";" ] ]
+        "for" "(" "[" "i" "]" "in" "1" ".." "ITERATIONS" ")" "{"
+            H hs=0[ H[ "val" H hs=0 [ "tmp" "=" "redCluster" ] ] ";" ]
+            H hs=0 [ H[ "redCluster" "=" "blackCluster" ] ";" ]
+            H hs=0 [ H[ "blackCluster" "=" "tmp" ] ";" ]
+            V[ H[ H hs=0 [ "for" "(" H[ H hs=0 [ "[" "p" "]" ] "in" H hs=0 [ "0" ".." "POINTS" "-" "1" ] ] ")" ] "{" ]
+                I is=4 [ V[
+                H hs=0 [ H[ "var" "closest" ":" "Int" "=" "-1" ] ";" ]
+                H hs=0 [ H[ "var" "closestDist" ":" "Float" "=" "Float.MAX_VALUE" ] ";" ]
+                H hs=0 [ H[ "val" "point" "=" H hs=0 [ "points" "(" "p" ")" ] ] ";" ]
+                "for" "(" "[" "k" "]" "in" "0" ".." "myK" "-" "1" ")" "{" "// compute closest mean in cluster."
+                    "val" "dist" "=" "blackCluster" "(" "k" ")" "." "dist" "(" "point" ")" ";"
+                    "if" "(" "dist" "<" "closestDist" ")" "{"
+                        "closestDist" "=" "dist" ";"
+                        "closest" "=" "k" ";"
+                    "}"
+                "}"
+                "redCluster" "(" "closest" ")" "." "addIn" "(" "point" ")" ";"
+                ] ]
+            "}" ]
+            "for" "(" "[" "k" "]" "in" "0" ".." "myK" "-" "1" ")" 
+                "redCluster" "(" "k" ")" "." "normalize" "(" ")" ";" 
+            
+            "var" "b" ":" "Boolean" "=" "true" ";"
+                "for" "(" "[" "k" "]" "in" "0" ".." "myK" "-" "1" ")" "{"
+                    "if" "(" "redCluster" "(" "k" ")" "." "dist" "(" "blackCluster" "(" "k" ")" ")" ">" "EPS" ")" "{"
+                        "b" "=" "false" ";"
+                        "break" ";"
+                    "}"
+                "}"
+            "if" "(" "b" ")" 
+                "break" ";"
+            "for" "(" "[" "k" "]" "in" "0" ".." "myK" "-" "1" ")" 
+                "blackCluster" "(" "k" ")" "." "makeZero" "(" ")" ";" 
+        "}"
+        "return" "redCluster" ";"
+        ] ]
+    "}"
+    ] ]
+  
+    "public" "static" "def" "main" "(" "Array" "[" "String" "]" ")" "{"
+        "val" "rnd" "=" "new" "Random" "(" "0" ")" ";"
+        "val" "points" "=" "new" "Array" "[" "ValVector" "]" "(" "POINTS" "," 
+                        "(" "int" ")" "=>" "new" "Array" "[" "Float" "]" "(" "DIM" "," "(" "int" ")" "=>" "rnd.nextFloat" "(" ")" ")" "as" "ValVector" ")" ";"
+        "val" "result" "=" "new" "KMeans" "(" "DIM" ")" "." "computeMeans" "(" "K" "," "points" ")" ";"
+        "for" "(" "[" "k" "]" "in" "0" ".." "K" "-" "1" ")" "result" "(" "k" ")" "." "print" "(" ")" ";"
+    "}"
+"}"
+]
+]
+]
