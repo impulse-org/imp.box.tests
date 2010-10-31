@@ -844,6 +844,20 @@ public class BoxInterpreterTest {
                 "a\nb\nc  d\n   e\n   f  g\n      h\n      i");
     }
 
+    @Test
+    public void composeHV_3() {
+        runTest(20, true, 4,
+                H( V("aaa", "bbb", "ccc"), V("ddd", "eee", "fff"), V("ggg", "hhh", "iii")),
+                "aaa\nbbb\nccc ddd\n    eee\n    fff ggg\n        hhh\n        iii");
+    }
+
+    @Test
+    public void composeHV_4() {
+        runTest(20, true, 4,
+                H( V("aaa", "bbb", "ccc"), V("dd", "ee", "ff"), V("g", "h", "i")),
+                "aaa\nbbb\nccc dd\n    ee\n    ff g\n       h\n       i");
+    }
+
     // ============================================================================================
 
     @Test
