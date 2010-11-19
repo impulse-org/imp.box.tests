@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import org.eclipse.imp.box.parser.BoxParseController;
 import org.eclipse.imp.box.parser.Ast.IBox;
-import org.eclipse.imp.utils.SystemOutErrMessageHandler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -884,7 +883,7 @@ public class BoxInterpreterTest {
 
     private static void runTest(int pageWidth, boolean spacesForTabs, int tabWidth, String boxString, String expected) {
         BoxInterpreter bi= new BoxInterpreter(pageWidth, true, 4);
-        IBox boxPrg= parseBox(boxString);
+        IBox boxPrg= BoxParseController.parseBox(boxString);
         String actual= bi.interpret(boxPrg);
         boolean result= actual != null && actual.equals(expected);
 
@@ -911,7 +910,7 @@ public class BoxInterpreterTest {
         String expected= readFile(expectedFile);
 
         BoxInterpreter bi= new BoxInterpreter(80, true, 4);
-        IBox boxPrg= parseBox(input);
+        IBox boxPrg= BoxParseController.parseBox(input);
         String actual= bi.interpret(boxPrg);
 
         assertEquals(expected, actual);
@@ -930,15 +929,6 @@ public class BoxInterpreterTest {
             return "";
         }
     }
-
-    private static IBox parseBox(String boxString) {
-        BoxParseController bpc= new BoxParseController(true);
-        bpc.initialize(null, null, new SystemOutErrMessageHandler());
-        IBox box= (IBox) bpc.parse(boxString, null);
-        return box;
-    }
-
-    // ============================================================================
 
     public static String H(String... args) {
         return emitOp("H", null, args);
